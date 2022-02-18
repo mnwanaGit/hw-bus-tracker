@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset = "utf-8" />
+<title>Add a default marker</title>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=1" />
+<script src ="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.js"></script>
+<link href ="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.css" rel ="stylesheet" />
+<style>
+    body { margin: 0; padding: 0;}
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    .map-overlay{
+        position: absolute;
+        left: 0;
+        padding: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div id ="map"></div>
+<div class ="map-overlay top">
+    <button style="font-size: 2em;" onclick="move()">
+        Show restaurants between MIT and Harvard
+    </button>
+</div>
+
+<script>
+
+//GENERATES A MAP OF CAMBRIDGE, CENTERED AT MIT CAMPUS
+//get token at https://account.mapbox.com
+mapboxgl.accessToken = 'pk.eyJ1IjoibW53YW5hIiwiYSI6ImNremZwc2ZjcTNiM2kyeXByNGp1N29qdjIifQ.9kw4diuBPPP4aYcDiSdHBA';
+
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [-71.101, 42.365],
+    zoom: 14
+    });
+
+//adding a marker
+var marker = new mapboxgl.Marker()
+    .setLngLat([-71.091542, 42.358862])
+    .addTo(map);
+
+const foodStops = [
+    [-71.09387982338313, 42.36298814673209],
+    [-71.09697760950979, 42.36309174894368],
+    [-71.0980520999574, 42.362497549689806],
+    [-71.09898405811292, 42.362597270506356],
+    [-71.1009930850188, 42.36384200804664],
+    [-71.10414496226323, 42.36562591138921],
+    [-71.1083305236409, 42.36835291460756],
+    [-71.10915408687137, 42.368645101102636],
+    [-71.10930507390222, 42.368949780206634],
+    [-71.1133047543297, 42.370992004776724]
+
+];
+
+var counter = 0;
+
+function move(){
+    setTimeout(() =>{
+        if(counter >= foodStops.length) return;
+        marker.setLngLat(foodStops[counter]);
+        counter++;
+        move();
+    }, 1000);
+}
+</script>
+</body>
+</html>
