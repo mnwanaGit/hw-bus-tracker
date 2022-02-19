@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset = "utf-8" />
+<title>Bus Route 1 Tracking</title>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=1" />
+<script src ="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.js"></script>
+<link href ="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.css" rel ="stylesheet" />
+<style>
+    body { margin: 0; padding: 0;}
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    .map-overlay{
+        position: absolute;
+        left: 0;
+        padding: 10px;
+    }
+</style>
+</head>
+<body>
+<div id ="map"></div>
+<div class ="map-overlay top"> Route 1 Bus Tracking
+</div>
+
+<script>
+
+
+async function run(){
+    var locations = await getBusLocations();
+    console.log(new Date());
+
+    var bus_stop = [];
+    locations.forEach(function org(b){
+          var id = b.id;
+          var lat = b.attributes.latitude;
+          var lng = b.attributes.longitude;
+          var units = bus_stop.push(id,lng,lat);    
+        });
+    return bus_stop;
+}
+async function getBusLocations(){
+    const url = 'https://api-v3.mbta.com/vehicles?filter[route]=1&include=trip';
+    const response = await fetch(url);
+    const json = await response.json();
+    return json.data;
+}
+
+//get token at https://account.mapbox.com
+mapboxgl.accessToken = 'pk.eyJ1IjoibW53YW5hIiwiYSI6ImNremZwc2ZjcTNiM2kyeXByNGp1N29qdjIifQ.9kw4diuBPPP4aYcDiSdHBA';
+
+//create a map
+var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-71.0906, 42.3616], //center on MIT campus
+        zoom: 12
+    });
+
+var start_point = new mapboxgl.Marker()
+    .setLngLat([-71.0906, 42.3616])
+    .addTo(map)
+
+//make new markers
+var mark1 = new mapboxgl.Marker()
+var mark2 = new mapboxgl.Marker()
+var mark3 = new mapboxgl.Marker()
+var mark4 = new mapboxgl.Marker()
+var mark5 = new mapboxgl.Marker()
+var mark6 = new mapboxgl.Marker()
+var mark7 = new mapboxgl.Marker()
+var mark8 = new mapboxgl.Marker()
+
+//making the markers move
+var stepper = async function(wherebus){
+
+    var bus_loc = await wherebus;
+    mark1.setLngLat([bus_loc[1],bus_loc[2]]);
+    mark1.addTo(map);
+    mark2.setLngLat([bus_loc[4],bus_loc[5]]);
+    mark2.addTo(map);
+    mark3.setLngLat([bus_loc[7],bus_loc[8]]);
+    mark3.addTo(map);
+    console.log('Buses available: '+ ts.length/3);
+    if (ts.length<9){
+        console.log('Insufficient number of buses.');
+        }       
+    else{
+        mark4.setLngLat([bus_loc[10],bus_loc[11]]);
+        mark4.addTo(map);
+        }
+    if (ts.length>12){
+        mark5.setLngLat([bus_loc[13],bus_loc[14]]);
+        mark5.addTo(map);
+        }
+    if (ts.length>15){
+        mark6.setLngLat([bus_loc[16],bus_loc[17]]);
+        mark6.addTo(map);
+          }
+    if (ts.length>18){
+        mark7.setLngLat([bus_loc[19],bus_loc[20]]);
+        mark7.addTo(map);
+        console.log('More than six buses');
+        }
+    if (ts.length>21){
+        mark8.setLngLat([bus_loc[22],bus_loc[23]]);
+        mark8.addTo(map);
+        console.log('More than seven buses');
+        }
+    if (ts.length>24){
+            console.log('Not all buses shown');
+          }
+          move();
+        }
+
+var ts = {};
+
+async function move(){
+    ts = await run();
+    setTimeout(async function() {await stepper(ts);}, 15000); // limited usage
+    }
+move();
+
+</script>
+</body>
+</html>
